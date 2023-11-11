@@ -1,0 +1,22 @@
+---
+title: "Jiaxin(Jessi) Huang"
+image: images/profile.jpg
+2toc: false
+about: 
+  template: jolla
+  image-width: 25em
+  image-shape: rectangle
+  links:
+    - text: LinkedIn
+      icon: linkedin
+      href: https://www.linkedin.com/in/jessi-huang-103179217/
+    - text: GitHub
+      icon: github
+      href: https://github.com/jh277
+    - text: Email
+      href: jiaxinhuang75@gmail.com
+---
+
+Hi everyone! I'm Jessi. I graduated from the University of Washington with a Bachelor degree in Environmental health. I'm a first year master student in Biostatistics program at Johns Hopkins Bloomberg School of Public Health.
+
+I enjoy cooking, traveling and outdoor activities like hiking and skiing. Here is a photo of me at undergraduate graduation ceremony.

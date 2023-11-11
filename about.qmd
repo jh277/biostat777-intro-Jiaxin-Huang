@@ -1,0 +1,35 @@
+---
+title: "About"
+---
+
+## Educational background
+
+**Johns Hopkins Bloomberg School of Public Health**\
+MS in Biostatistics \| Aug 2023 - May 2025
+
+Courses: Probability and Statistical Inferences, Methods in Biostatistics, Statistical Programming Paradigms and Workflows
+
+**University of Washington**\
+BS in Environmental Health \| Sept 2019 - Jun 2023
+
+Courses: Linear Algebra, Computer Programming, Probability, Statistical Methods in Engineering and Science, Statistical Computing.
+
+## Professional experience
+
+**Research on the Relationship between Fish Weight and Fish Length** \| October 202-December 2021
+
+\* Cleaned 5,000+ raw data; processed data in R and found variables of weight and length were highly skewed.\
+\* Detected the relationship between two variables; applied log transformation to linearize the relationship, resulting in an 26.7% increase in accuracy.\
+\* Performed residual scatterplot and residual histogram to ensure the normal distribution; accurately modeling the relationship between fish weight and fish length.
+
+**Henry & Stark County Health Department** \| June 2022-August 2022
+
+\* Researched, synthesized, and compiled environmental health policies and procedures enforced by Henry & Stark County to generate a single and organized document with more than 200 pages for staff training, effectively reduced the average time spent in file research time by 95%.\
+\* Designed a user-friendly dashboard template that tracks health inspection data and automatically renews charts with visualized data (histograms, line plot, pie chart), which is actively used by relevant staff members.\
+\* Developed a 20-page professional Foodborne Illness Risk Factor Report under the guidance of FDA Voluntary National Retail Food Regulatory Program Standards.
+
+## Academic interest
+
+Taking lead roles in designing new statistical and computational methodologies to analyze environmental and biomedical data and solve health problems.\
+Bringing innovative ideas from statistical research to people's lives to bridge the gap between academic findings and practical public health.\
+Promoting health equities around the world.\

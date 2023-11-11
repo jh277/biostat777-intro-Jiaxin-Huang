@@ -1,0 +1,169 @@
+---
+title: "Example Analysis"
+author:
+  - name: Jiaxin Huang
+description: "Exploring relationship between rainfall and temperature"
+bibliography: References.bib
+---
+
+## Research Question
+
+![](images/rainfall_temp.jpeg)
+
+[@newsarticle]
+
+Numerous studies have shown that modern agriculture brings great damage to our ecosystem through accelerating climate change, which result in higher temperature increases and less rainfall.[@farmingresult]
+
+The goal of this example analysis is to further explore the relationship between temperature and rainfall. Then zoom in to one city and study the distribution of rainfall for a given year. To answer the question above, I will do the following:
+
+1\. make a line plot of the max and min temperature (y-axis) over time (x-axis) for each city.
+
+2\. plots the estimates of mean rainfall and the 95% confidence intervals on the same plot. There should be a separate faceted plot for each city.
+
+3\. explore the distribution of rainfall (log scale) with histograms for a given city for a given year.
+
+## Target audience
+
+Any environmental specialists who are interested in exploring the relationship between temperature and rainfall, and use the relationship to predict possible health impacts on the population.
+
+## Methods
+
+### Load original data
+
+The two datasets I will be using come from [TidyTuesday](https://www.tidytuesday.com). Specifically, I will use the following data from January 2020.
+
+```{r message=FALSE}
+#| echo: false
+library(tidyverse)
+library(tidytuesdayR)
+library(here)
+rainfall <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-07/rainfall.csv')
+temperature <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-07/temperature.csv')
+```
+
+### Data dictionary
+
+If you want to find out what the column names represent, here is the data dictionary for the dataset: - <https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-07/readme.md#data-dictionary> [@datadictionary]
+
+### Data analysis
+
+##### Research Question 1
+
+In order to answer the first question, we need to first join the two datasets together:
+
+```{r data manipulation}
+rainfall_wrangled <- rainfall %>%
+  na.omit(rainfall) %>%
+  unite("date", c("year", "month", "day"), sep = "-", remove = FALSE) %>%
+  mutate(date = ymd(date)) %>%
+  select(-month, -day) %>%
+  mutate(city_name = str_to_upper(city_name))
+combined_data <- inner_join(x = rainfall_wrangled, y = temperature,  by=c('date', 'city_name'), relationship = "many-to-many")
+glimpse(head(combined_data))
+```
+
+```{r question 1}
+# plot 1 using geom_line and facet_wrap
+combined_data %>%
+  filter(year >= 2014) %>%
+  ggplot(aes(x = date, y = temperature, colour = temp_type)) +
+  geom_line() +
+  facet_wrap(vars(city_name), ncol = 2) +
+  labs(title = "Max and min temperature over time for each city since 2014", 
+       subtitle = "Max and min termperature fluctuate simultaneously and regularly during the year.",
+       x = "Date", y = "Min and Max temperature",
+       caption = "Jiaxin Huang") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle=element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+##### Research Question 2
+
+```{r question 2}
+# plot 3 using geom_point and geom_errorbar and facet_warp
+calculate_CI <- function(x, conf) {
+  alpha <- 1 - conf
+  degrees_freedom <- length(x) - 1
+  t_score <- qt(p = alpha / 2, df = degrees_freedom, lower.tail = FALSE)
+  sample_sd_err <- sd(x)/sqrt(length(x))
+  lower_bound <- mean(x) - t_score * sample_sd_err
+  upper_bound <- mean(x) + t_score * sample_sd_err
+  output_value <- c(lower_bound, upper_bound)
+  output_name <- c("lower_bound", "upper_bound")
+  output <- setNames(output_value, output_name)
+  return(output)
+}
+rain_df <- combined_data %>%
+  filter(year >= 2014) %>%
+  group_by(year, city_name) %>%
+  summarize(sample_mean = mean(rainfall),
+            sample_sd = sd(rainfall),
+            lower_bound = calculate_CI(rainfall, 0.95)["lower_bound"],
+            upper_bound = calculate_CI(rainfall, 0.95)["upper_bound"])
+rain_df %>%
+  ggplot(aes(x = year, y = sample_mean, colour = "pink")) +
+  geom_point(size = 2) +
+  geom_line(colour = "black") +
+  geom_errorbar(aes(ymin = lower_bound, ymax = upper_bound)) +
+  facet_wrap(vars(city_name)) +
+  labs(title = "Mean and 95% CI for rainfall over time for each city", 
+       subtitle = "Canberra and Sydney have the lowest amount of rainfall, while the rest have relatively more rainfall.\nThe amount of rainfall tends to decrease as time goes by.",
+       x = "Year", y = "Amount of rainfall",
+       caption = "Jiaxin Huang") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle=element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+##### Research Question 3
+
+::: callout-tip
+Using the wrangled data from research question 1.
+:::
+
+```{r question 3}
+# plot 3 using geom_histogram
+rainfall_histogram <- function(input_city, input_year){
+  # first, check if the input city and year exist in the dataset
+  if (any(combined_data$city_name == input_city & combined_data$year == input_year)) {
+    # if exists, generate histogram for the choosen city and year
+    combined_data %>%
+    filter(city_name == input_city, year == input_year) %>%
+    ggplot(aes(log(rainfall))) +
+    geom_histogram(colour = 4, fill = "white", bins = 20) +
+    labs(title = paste("Distribution of rainfall (log scale) in", str_to_lower(input_city), "in", input_year),
+         subtitle = "The following histogram shows the distribution of rainfall on log scale",
+         x = "Log-transformed rainfall",
+         y = "count of rainfall amount",
+         caption = "Jiaxin Huang") +
+         theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+               plot.subtitle=element_text(size = 10))
+  } else {
+    # if data does not exist, print error messages
+    stop("Your input does not exist in the dataset")
+  }
+}
+```
+
+```{r example}
+#| column: margin
+# Example: distribution of rainfall in Perth in 2014
+rainfall_histogram("PERTH", 2014)
+```
+
+##### Summary of functions used
+
+Functions used in data manipulation: unite(), mutate(), select(), inner_join(), glimpse(), filter(), group_by(), summarize().
+
+Functions used in data visualization: geom_line(), geom_point(), geom_error_bar(), geom_histogram, facet_wrap()
+
+# Findings
+
+Canberra and Sydney has greatest variation in temperature over time, and they also have lowest amount of rainfall. Perth and Melbourne has least variation in temperature, and they also have greatest amount of rainfall. Thus, temperature and rainfall seems to be negatively correlated with each other.
+
+::: callout-note
+The relationship is NOT causal.
+:::
+
+# References
