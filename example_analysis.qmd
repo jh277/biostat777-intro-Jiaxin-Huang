@@ -8,32 +8,34 @@ bibliography: References.bib
 
 ## Research Question
 
+Rainfall and temperature are two important determining factors in agriculture production. However, factors like geographical region and interdependence between these two variables makes it hard to accurately model their relationship.[@relationship] Moreover, it is important to remind the mutual relationship between environmental factors (rainfall and temperature) and human activities (agricultural production). While environmental factors play a great role in determining crop production, modern agriculture also brings great impact to our ecosystem by accelerating climate change.[@farmingresult]
+
 ![](images/rainfall_temp.jpeg)
 
 [@newsarticle]
 
-Numerous studies have shown that modern agriculture brings great damage to our ecosystem through accelerating climate change, which result in higher temperature increases and less rainfall.[@farmingresult]
+The goal of this analysis is to provide a basic idea of how to model the relationship between rainfall and temperature. Then zoom in to one city and study the distribution of rainfall for a given year. In order to properly address the question above, I'd like to split it into three parts:
 
-The goal of this example analysis is to further explore the relationship between temperature and rainfall. Then zoom in to one city and study the distribution of rainfall for a given year. To answer the question above, I will do the following:
+1\. make a line plot of the max and min temperature (y-axis) over time (x-axis).
 
-1\. make a line plot of the max and min temperature (y-axis) over time (x-axis) for each city.
-
-2\. plots the estimates of mean rainfall and the 95% confidence intervals on the same plot. There should be a separate faceted plot for each city.
+2\. plot the estimates of mean rainfall and the 95% confidence intervals on the same plot.
 
 3\. explore the distribution of rainfall (log scale) with histograms for a given city for a given year.
 
 ## Target audience
 
-Any environmental specialists who are interested in exploring the relationship between temperature and rainfall, and use the relationship to predict possible health impacts on the population.
+1.  Any environmental specialists who are interested in exploring the relationship between temperature and rainfall, and use the relationship to predict possible health impacts on the population.
+2.  Farmers who want to make plans for their crop production and develop risk reducing strategies.
 
 ## Methods
 
 ### Load original data
 
-The two datasets I will be using come from [TidyTuesday](https://www.tidytuesday.com). Specifically, I will use the following data from January 2020.
+The two datasets I will be using come from [TidyTuesday](https://www.tidytuesday.com). Specifically, I will use data that comes from January 2020.
+
+Here are the links to the original datasets: [rainfall](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-07/rainfall.csv) and [temperature](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-07/temperature.csv)
 
 ```{r message=FALSE}
-#| echo: false
 library(tidyverse)
 library(tidytuesdayR)
 library(here)
@@ -43,7 +45,7 @@ temperature <- readr::read_csv('https://raw.githubusercontent.com/rfordatascienc
 
 ### Data dictionary
 
-If you want to find out what the column names represent, here is the data dictionary for the dataset: - <https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-07/readme.md#data-dictionary> [@datadictionary]
+If you want to find out what the column names represent, here is the link to the data dictionary: <https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-07/readme.md#data-dictionary> [@datadictionary]
 
 ### Data analysis
 
@@ -81,7 +83,7 @@ combined_data %>%
 ##### Research Question 2
 
 ```{r question 2}
-# plot 3 using geom_point and geom_errorbar and facet_warp
+# plot 2 using geom_point and geom_errorbar and facet_warp
 calculate_CI <- function(x, conf) {
   alpha <- 1 - conf
   degrees_freedom <- length(x) - 1
@@ -119,7 +121,7 @@ rain_df %>%
 ##### Research Question 3
 
 ::: callout-tip
-Using the wrangled data from research question 1.
+Use the wrangled data from research question 1.
 :::
 
 ```{r question 3}
@@ -152,18 +154,22 @@ rainfall_histogram <- function(input_city, input_year){
 rainfall_histogram("PERTH", 2014)
 ```
 
-##### Summary of functions used
+### Summary of functions used
 
-Functions used in data manipulation: unite(), mutate(), select(), inner_join(), glimpse(), filter(), group_by(), summarize().
+Functions used from `tidyr`: unite(), mutate(), select(), inner_join(), glimpse(), filter(), group_by(), summarize().
 
-Functions used in data visualization: geom_line(), geom_point(), geom_error_bar(), geom_histogram, facet_wrap()
+Functions used from `ggplot2`: geom_line(), geom_point(), geom_error_bar(), geom_histogram, facet_wrap()
 
 # Findings
 
-Canberra and Sydney has greatest variation in temperature over time, and they also have lowest amount of rainfall. Perth and Melbourne has least variation in temperature, and they also have greatest amount of rainfall. Thus, temperature and rainfall seems to be negatively correlated with each other.
+Canberra and Sydney have greatest variation in temperature over time, and they also have lowest amount of rainfall. In addition, Perth and Melbourne has least variation in temperature, and they also have greatest amount of rainfall. Thus, temperature and rainfall seems to be negatively correlated with each other in these two locations.
+
+::: callout-warning
+The relationship is NOT causal.
+:::
 
 ::: callout-note
-The relationship is NOT causal.
+Considering that the relationship between rainfall and temperature is affected by multiple factors, it is inappropriate to view this conclusion as a global trend.
 :::
 
 # References
